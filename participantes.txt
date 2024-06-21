@@ -1,0 +1,3 @@
+loco,loco@gmail.com,12
+lucio,lucio@gmail.com,12
+Luan,luanf.glaab@gmail.com,41000
