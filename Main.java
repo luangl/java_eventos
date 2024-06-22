@@ -77,7 +77,7 @@ public class Main {
                 case 1:
                     System.out.print("Nome do evento: ");
                     String nomeEvento = scanner.nextLine();
-                    System.out.print("Data do evento (DD/MM/AAAA): ");
+                    System.out.print("Data do evento (DDMMAAAA): ");
                     String dataEvento = scanner.nextLine();
                     Evento evento = new Evento(nomeEvento, dataEvento);
                     gerenciadorEventos.adicionarEvento(evento);
@@ -205,7 +205,7 @@ public class Main {
             return;
         }
 
-        System.out.print("Data do check-in (DD/MM/AAAA): ");
+        System.out.print("Data do check-in (DDMMAAAA): ");
         String dataCheckIn = scanner.nextLine();
         CheckIn checkIn = new CheckIn(participante, evento, dataCheckIn);
         gerenciadorCheckIns.registrarCheckIn(checkIn);
