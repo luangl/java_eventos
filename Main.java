@@ -71,7 +71,7 @@ public class Main {
             System.out.println("4. Voltar");
             System.out.print("Escolha uma opção: ");
             opcao = scanner.nextInt();
-            scanner.nextLine();  // Consumir a nova linha
+            scanner.nextLine();  
 
             switch (opcao) {
                 case 1:
@@ -84,10 +84,7 @@ public class Main {
                     System.out.println("Evento adicionado com sucesso.");
                     break;
                 case 2:
-                    System.out.println("\n--- Lista de Eventos ---");
-                    for (Evento ev : gerenciadorEventos.listarEventos()) {
-                        System.out.println("Nome: " + ev.getNome() + ", Data: " + ev.getData());
-                    }
+                    listarEventosOrdenados(scanner);
                     break;
                 case 3:
                     System.out.print("Nome do evento a remover: ");
@@ -101,12 +98,45 @@ public class Main {
                     }
                     break;
                 case 4:
-                    System.out.println("Voltando ao menu principal...");
-                    break;
+                System.out.println("Voltando ao menu principal...");
+                break;
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
             }
         } while (opcao != 4);
+    }
+
+    private static void listarEventosOrdenados(Scanner scanner) {
+        int opcao;
+    
+        System.out.println("\n--- Listar Eventos Ordenados ---");
+        System.out.println("1. Por Nome");
+        System.out.println("2. Por Data");
+        System.out.print("Escolha uma opção de ordenação: ");
+        opcao = scanner.nextInt();
+        scanner.nextLine(); 
+    
+        switch (opcao) {
+            case 1:
+                System.out.println("\n--- Lista de Eventos Ordenados por Nome ---");
+                gerenciadorEventos.organizarPorNome();
+                    System.out.println("Eventos organizados por nome.");
+                for (Evento ev : gerenciadorEventos.listarEventos()) {
+                    System.out.println("Nome: " + ev.getNome() + ", Data: " + ev.getData());
+                }
+                break;
+            case 2:
+                System.out.println("\n--- Lista de Eventos Ordenados por Data ---");
+                gerenciadorEventos.organizarPorData();
+                    System.out.println("Eventos organizados por data.");
+                for (Evento ev : gerenciadorEventos.listarEventos()) {
+                    System.out.println("Nome: " + ev.getNome() + ", Data: " + ev.getData());
+                }
+                break;
+            default:
+                System.out.println("Opção inválida. Voltando ao menu anterior...");
+                break;
+        }
     }
 
     private static void gerenciarParticipantes(Scanner scanner) {

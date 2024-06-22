@@ -1,7 +1,9 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-public class GerenciadorEventos {
+public class GerenciadorEventos  implements Organizavel {
     private List<Evento> eventos;
 
     public GerenciadorEventos() {
@@ -18,6 +20,16 @@ public class GerenciadorEventos {
 
     public List<Evento> listarEventos() {
         return eventos;
+    }
+
+    @Override
+    public void organizarPorNome() {
+        Collections.sort(eventos, Comparator.comparing(Evento::getNome));
+    }
+
+    @Override
+    public void organizarPorData() {
+        Collections.sort(eventos, Comparator.comparing(Evento::getData));
     }
 
     public Evento buscarEventoPorNome(String nome) {
