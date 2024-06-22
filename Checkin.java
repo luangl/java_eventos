@@ -1,37 +1,23 @@
-public class Checkin {
-    private Evento evento;
+public class CheckIn {
     private Participante participante;
-    private String dataCheckin;
+    private Evento evento;
+    private String dataCheckIn;
 
-    public Checkin(Evento evento, Participante participante, String dataCheckin) {
-        this.evento = evento;
+    public CheckIn(Participante participante, Evento evento, String dataCheckIn) {
         this.participante = participante;
-        this.dataCheckin = dataCheckin;
-    }
-
-    // Getters e Setters
-
-    public Evento getEvento() {
-        return evento;
-    }
-
-    public void setEvento(Evento evento) {
         this.evento = evento;
+        this.dataCheckIn = dataCheckIn;
     }
 
     public Participante getParticipante() {
         return participante;
     }
 
-    public void setParticipante(Participante participante) {
-        this.participante = participante;
+    public Evento getEvento() {
+        return evento;
     }
 
-    public String getDataCheckin() {
-        return dataCheckin;
-    }
-
-    public void setDataCheckin(String dataCheckin) {
-        this.dataCheckin = dataCheckin;
+    public String getDataCheckIn() {
+        return dataCheckIn;
     }
 }

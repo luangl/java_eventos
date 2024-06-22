@@ -1,56 +1,52 @@
-# Sistema de Gerenciamento de Eventos
+- Sistema de Gerenciamento de Eventos
+Informações Gerais sobre o Projeto
+Este projeto consiste em um sistema de gerenciamento de eventos, desenvolvido em Java, que permite aos usuários criar, listar e remover eventos, gerenciar participantes e registrar check-ins. Além disso, oferece funcionalidades avançadas como persistência de dados, geração de relatórios de participação, frequência e estatísticas de engajamento.
 
-## Informações Gerais sobre o Projeto
-Este projeto é um sistema de gerenciamento de eventos desenvolvido como parte do trabalho final de desenvolvimento de software. O sistema permite o cadastro de eventos, participantes e check-ins, além de gerar relatórios de participação e exibir estatísticas de engajamento.
+Informações sobre as Classes e suas Relações
+O projeto utiliza uma estrutura orientada a objetos com várias classes que se relacionam através de agregação, composição e associação:
 
-### Objetivos
-- Aplicar conceitos de orientação a objetos, tratamento de exceções, persistência de dados e boas práticas de codificação.
-- Demonstrar criatividade e entendimento na construção de sistemas mais complexos do que um simples CRUD.
+Evento: Representa um evento com nome e data.
 
-### Funcionalidades Principais
-- Cadastro de eventos e participantes.
-- Registro de check-ins em eventos.
-- Geração de relatórios de participação.
-- Exibição de estatísticas de engajamento.
+Associação: Participantes podem se inscrever em eventos.
+Participante: Representa um participante com nome e email.
 
-## Informações sobre as Classes e suas Relações
+Associação: Participantes podem se inscrever em eventos e são registrados nos check-ins.
+CheckIn: Relaciona um participante a um evento em uma data específica.
 
-### Classes e Relações
-- **Pessoa (Classe Abstrata)**: Classe base para `Participante`, contendo atributos comuns como `nome` e `email`.
-- **Participante (Herda de Pessoa)**: Representa um participante de um evento, com atributos adicionais como `telefone`.
-- **Evento**: Representa um evento, contendo informações como `título`, `data` e a lista de participantes inscritos.
-- **Checkin**: Representa o registro de check-in de um participante em um evento.
-- **GerenciamentoEventos**: Implementa a interface `Gerenciamento` e gerencia eventos, participantes e check-ins.
+Composição: Um check-in depende diretamente de um evento e de um participante específico.
+GerenciadorEventos: Gerencia a criação, listagem e remoção de eventos.
 
-### Agregação, Composição e Associação
-- **Agregação**: A classe `Evento` agrega uma lista de `Participante` através do relacionamento entre os participantes inscritos e o evento.
-- **Composição**: A classe `GerenciamentoEventos` compõe uma lista de `Evento`, `Participante` e `Checkin`, gerenciando-os.
-- **Associação**: O `Checkin` associa um `Participante` a um `Evento`.
+Agregação: Gerencia uma lista de eventos.
+GerenciadorParticipantes: Gerencia a criação, listagem e remoção de participantes.
 
-## Como Executar o Projeto
+Agregação: Gerencia uma lista de participantes.
+GerenciadorCheckIns: Gerencia o registro e a listagem de check-ins.
 
-### Pré-requisitos
-- JDK 8 ou superior.
-- IDE de sua escolha (IntelliJ, Eclipse, etc.).
+Agregação: Gerencia uma lista de check-ins.
+Persistencia: Classe auxiliar para salvar e carregar dados de eventos, participantes e check-ins em arquivos.
 
-### Passos para Executar
-1. Clone o repositório:
-   ```sh
-   git clone <URL_DO_REPOSITORIO>
+Relatorio: Gera relatórios sobre participação, frequência e estatísticas de engajamento dos eventos.
 
-2. Importe o projeto para sua IDE.
+Como Executar o Projeto
+Para executar o projeto, siga os passos abaixo:
 
-3. Compile e execute a classe Main.
+Pré-requisitos:
 
+Java JDK 8 ou superior instalado.
+IDE Java (recomendado) ou compilador Java instalado.
+Configuração:
 
+Clone o repositório Git para o seu ambiente local.
+Execução:
+
+Abra o projeto em sua IDE Java.
+Compile e execute a classe Main.java.
+Interagindo com o Sistema:
+
+Siga as instruções apresentadas no console para gerenciar eventos, participantes, registrar check-ins e gerar relatórios.
 Uso do ChatGPT
-O ChatGPT foi utilizado para:
-
-Correção de bugs.
-Corrigir e otimizar o código durante o desenvolvimento.
-
+O ChatGPT foi utilizado neste projeto para fornecer suporte na elaboração da estrutura do sistema, na lógica de programação e na orientação sobre boas práticas de desenvolvimento de software. Ele ajudou a esclarecer dúvidas conceituais e a otimizar a implementação das funcionalidades propostas.
 
 Referências e Recursos
--Documentação do Java
--Guia de Clean Code
--Recursos utilizados durante o desenvolvimento foram mencionados ao longo do projeto.
+Documentação oficial do Java: https://docs.oracle.com/javase/
+Stack Overflow e GitHub foram utilizados para busca de soluções específicas e exemplos práticos durante o desenvolvimento.

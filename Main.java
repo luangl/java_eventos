@@ -1,151 +1,216 @@
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.List;
 
 public class Main {
-    public static void main(String[] args) {
-        GerenciamentoEventos gerenciamento = new GerenciamentoEventos();
-        Scanner scanner = new Scanner(System.in);
+    private static GerenciadorEventos gerenciadorEventos = new GerenciadorEventos();
+    private static GerenciadorParticipantes gerenciadorParticipantes = new GerenciadorParticipantes();
+    private static GerenciadorCheckIns gerenciadorCheckIns = new GerenciadorCheckIns();
+    private static Relatorio relatorio = new Relatorio(gerenciadorCheckIns);
 
+    public static void main(String[] args) {
         try {
-            Persistencia.carregarDados(gerenciamento.getEventos(), gerenciamento.getParticipantes(), "eventos.txt", "participantes.txt");
+            Persistencia.carregarEventos(gerenciadorEventos, "eventos.txt");
+            Persistencia.carregarParticipantes(gerenciadorParticipantes, "participantes.txt");
+            Persistencia.carregarCheckIns(gerenciadorCheckIns, gerenciadorEventos, gerenciadorParticipantes, "checkins.txt");
         } catch (IOException e) {
             System.out.println("Erro ao carregar dados: " + e.getMessage());
         }
 
-        boolean executando = true;
+        Scanner scanner = new Scanner(System.in);
+        int opcao;
 
-        while (executando) {
-            System.out.println("1. Cadastrar Evento");
-            System.out.println("2. Cadastrar Participante");
-            System.out.println("3. Inscrever Participante em Evento");
-            System.out.println("4. Registrar Check-in");
-            System.out.println("5. Gerar Relatório de Participação");
-            System.out.println("6. Exibir Estatísticas");
-            System.out.println("7. Sair");
+        do {
+            System.out.println("\n--- Sistema de Gerenciamento de Eventos ---");
+            System.out.println("1. Gerenciar Eventos");
+            System.out.println("2. Gerenciar Participantes");
+            System.out.println("3. Registrar Check-in");
+            System.out.println("4. Gerar Relatórios");
+            System.out.println("5. Sair");
             System.out.print("Escolha uma opção: ");
-            int opcao = scanner.nextInt();
+            opcao = scanner.nextInt();
             scanner.nextLine();  // Consumir a nova linha
 
             switch (opcao) {
                 case 1:
-                    System.out.print("Título: ");
-                    String titulo = scanner.nextLine();
-                    System.out.print("Descrição: ");
-                    String descricao = scanner.nextLine();
-                    System.out.print("Data: ");
-                    String data = scanner.nextLine();
-                    System.out.print("Local: ");
-                    String local = scanner.nextLine();
-                    System.out.print("Capacidade Máxima: ");
-                    int capacidade = scanner.nextInt();
-                    scanner.nextLine();  // Consumir a nova linha
-
-                    Evento evento = new Evento(titulo, descricao, data, local, capacidade);
-                    gerenciamento.cadastrarEvento(evento);
+                    gerenciarEventos(scanner);
                     break;
-
                 case 2:
-                    System.out.print("Nome: ");
-                    String nome = scanner.nextLine();
-                    System.out.print("Email: ");
-                    String email = scanner.nextLine();
-                    System.out.print("Telefone: ");
-                    String telefone = scanner.nextLine();
-
-                    Participante participante = new Participante(nome, email, telefone);
-                    gerenciamento.cadastrarParticipante(participante);
+                    gerenciarParticipantes(scanner);
                     break;
-
                 case 3:
-                    System.out.print("Título do Evento: ");
-                    String tituloEventoInscricao = scanner.nextLine();
-                    System.out.print("Email do Participante: ");
-                    String emailParticipanteInscricao = scanner.nextLine();
-
-                    Evento eventoInscricao = gerenciamento.getEventos().stream()
-                            .filter(e -> e.getTitulo().equals(tituloEventoInscricao))
-                            .findFirst()
-                            .orElse(null);
-
-                    Participante participanteInscricao = gerenciamento.getParticipantes().stream()
-                            .filter(p -> p.getEmail().equals(emailParticipanteInscricao))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (eventoInscricao != null && participanteInscricao != null) {
-                        eventoInscricao.inscreverParticipante(participanteInscricao);
-                        System.out.println("Participante inscrito com sucesso.");
-                    } else {
-                        System.out.println("Evento ou Participante não encontrado.");
-                    }
+                    registrarCheckIn(scanner);
                     break;
-
                 case 4:
-                    System.out.print("Título do Evento: ");
-                    String tituloEventoCheckin = scanner.nextLine();
-                    System.out.print("Email do Participante: ");
-                    String emailParticipanteCheckin = scanner.nextLine();
-                    System.out.print("Data do Check-in: ");
-                    String dataCheckin = scanner.nextLine();
+                    gerarRelatorios(scanner);
+                    break;
+                case 5:
+                    System.out.println("Saindo...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        } while (opcao != 5);
 
-                    Evento eventoCheckin = gerenciamento.getEventos().stream()
-                            .filter(e -> e.getTitulo().equals(tituloEventoCheckin))
-                            .findFirst()
-                            .orElse(null);
+        try {
+            Persistencia.salvarEventos(gerenciadorEventos.listarEventos(), "eventos.txt");
+            Persistencia.salvarParticipantes(gerenciadorParticipantes.listarParticipantes(), "participantes.txt");
+            Persistencia.salvarCheckIns(gerenciadorCheckIns.listarCheckIns(), "checkins.txt");
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar dados: " + e.getMessage());
+        }
+    }
 
-                    Participante participanteCheckin = gerenciamento.getParticipantes().stream()
-                            .filter(p -> p.getEmail().equals(emailParticipanteCheckin))
-                            .findFirst()
-                            .orElse(null);
+    private static void gerenciarEventos(Scanner scanner) {
+        int opcao;
 
-                    if (eventoCheckin != null && participanteCheckin != null) {
-                        Checkin checkin = new Checkin(eventoCheckin, participanteCheckin, dataCheckin);
-                        gerenciamento.registrarCheckin(checkin);
-                    } else {
-                        System.out.println("Evento ou Participante não encontrado.");
+        do {
+            System.out.println("\n--- Gerenciar Eventos ---");
+            System.out.println("1. Adicionar Evento");
+            System.out.println("2. Listar Eventos");
+            System.out.println("3. Remover Evento");
+            System.out.println("4. Voltar");
+            System.out.print("Escolha uma opção: ");
+            opcao = scanner.nextInt();
+            scanner.nextLine();  // Consumir a nova linha
+
+            switch (opcao) {
+                case 1:
+                    System.out.print("Nome do evento: ");
+                    String nomeEvento = scanner.nextLine();
+                    System.out.print("Data do evento (DD/MM/AAAA): ");
+                    String dataEvento = scanner.nextLine();
+                    Evento evento = new Evento(nomeEvento, dataEvento);
+                    gerenciadorEventos.adicionarEvento(evento);
+                    System.out.println("Evento adicionado com sucesso.");
+                    break;
+                case 2:
+                    System.out.println("\n--- Lista de Eventos ---");
+                    for (Evento ev : gerenciadorEventos.listarEventos()) {
+                        System.out.println("Nome: " + ev.getNome() + ", Data: " + ev.getData());
                     }
                     break;
-
-                case 5:
-                    System.out.print("Título do Evento: ");
-                    String tituloRelatorio = scanner.nextLine();
-
-                    Evento eventoRelatorio = gerenciamento.getEventos().stream()
-                            .filter(e -> e.getTitulo().equals(tituloRelatorio))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (eventoRelatorio != null) {
-                        List<Checkin> relatorio = gerenciamento.gerarRelatorioParticipacao(eventoRelatorio);
-                        System.out.println("Relatório de Participação:");
-                        for (Checkin c : relatorio) {
-                            System.out.println("Participante: " + c.getParticipante().getNome() + ", Data: " + c.getDataCheckin());
-                        }
+                case 3:
+                    System.out.print("Nome do evento a remover: ");
+                    String nomeRemover = scanner.nextLine();
+                    Evento eventoRemover = gerenciadorEventos.buscarEventoPorNome(nomeRemover);
+                    if (eventoRemover != null) {
+                        gerenciadorEventos.removerEvento(eventoRemover);
+                        System.out.println("Evento removido com sucesso.");
                     } else {
                         System.out.println("Evento não encontrado.");
                     }
                     break;
-
-                case 6:
-                    gerenciamento.exibirEstatisticas();
+                case 4:
+                    System.out.println("Voltando ao menu principal...");
                     break;
-
-                case 7:
-                    try {
-                        Persistencia.salvarDados(gerenciamento.getEventos(), gerenciamento.getParticipantes(), "eventos.txt", "participantes.txt");
-                    } catch (IOException e) {
-                        System.out.println("Erro ao salvar dados: " + e.getMessage());
-                    }
-                    executando = false;
-                    break;
-
                 default:
-                    System.out.println("Opção inválida.");
-                    break;
+                    System.out.println("Opção inválida. Tente novamente.");
             }
+        } while (opcao != 4);
+    }
+
+    private static void gerenciarParticipantes(Scanner scanner) {
+        int opcao;
+
+        do {
+            System.out.println("\n--- Gerenciar Participantes ---");
+            System.out.println("1. Adicionar Participante");
+            System.out.println("2. Listar Participantes");
+            System.out.println("3. Remover Participante");
+            System.out.println("4. Voltar");
+            System.out.print("Escolha uma opção: ");
+            opcao = scanner.nextInt();
+            scanner.nextLine();  // Consumir a nova linha
+
+            switch (opcao) {
+                case 1:
+                    System.out.print("Nome do participante: ");
+                    String nomeParticipante = scanner.nextLine();
+                    System.out.print("Email do participante: ");
+                    String emailParticipante = scanner.nextLine();
+                    Participante participante = new Participante(nomeParticipante, emailParticipante);
+                    gerenciadorParticipantes.adicionarParticipante(participante);
+                    System.out.println("Participante adicionado com sucesso.");
+                    break;
+                case 2:
+                    System.out.println("\n--- Lista de Participantes ---");
+                    for (Participante p : gerenciadorParticipantes.listarParticipantes()) {
+                        System.out.println("Nome: " + p.getNome() + ", Email: " + p.getEmail());
+                    }
+                    break;
+                case 3:
+                    System.out.print("Nome do participante a remover: ");
+                    String nomeRemover = scanner.nextLine();
+                    Participante participanteRemover = gerenciadorParticipantes.buscarParticipantePorNome(nomeRemover);
+                    if (participanteRemover != null) {
+                        gerenciadorParticipantes.removerParticipante(participanteRemover);
+                        System.out.println("Participante removido com sucesso.");
+                    } else {
+                        System.out.println("Participante não encontrado.");
+                    }
+                    break;
+                case 4:
+                    System.out.println("Voltando ao menu principal...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        } while (opcao != 4);
+    }
+
+    private static void registrarCheckIn(Scanner scanner) {
+        System.out.print("Nome do participante: ");
+        String nomeParticipante = scanner.nextLine();
+        Participante participante = gerenciadorParticipantes.buscarParticipantePorNome(nomeParticipante);
+        if (participante == null) {
+            System.out.println("Participante não encontrado.");
+            return;
         }
 
-        scanner.close();
+        System.out.print("Nome do evento: ");
+        String nomeEvento = scanner.nextLine();
+        Evento evento = gerenciadorEventos.buscarEventoPorNome(nomeEvento);
+        if (evento == null) {
+            System.out.println("Evento não encontrado.");
+            return;
+        }
+
+        System.out.print("Data do check-in (DD/MM/AAAA): ");
+        String dataCheckIn = scanner.nextLine();
+        CheckIn checkIn = new CheckIn(participante, evento, dataCheckIn);
+        gerenciadorCheckIns.registrarCheckIn(checkIn);
+        System.out.println("Check-in registrado com sucesso.");
+    }
+
+    private static void gerarRelatorios(Scanner scanner) {
+        int opcao;
+
+        do {
+            System.out.println("\n--- Gerar Relatórios ---");
+            System.out.println("1. Relatório de Participação por Evento");
+            System.out.println("2. Relatório de Frequência por Participante");
+            System.out.println("3. Estatísticas de Engajamento");
+            System.out.println("4. Voltar");
+            System.out.print("Escolha uma opção: ");
+            opcao = scanner.nextInt();
+            scanner.nextLine();  // Consumir a nova linha
+
+            switch (opcao) {
+                case 1:
+                    relatorio.gerarRelatorioParticipacao();
+                    break;
+                case 2:
+                    relatorio.gerarRelatorioFrequencia();
+                    break;
+                case 3:
+                    relatorio.gerarEstatisticasEngajamento();
+                    break;
+                case 4:
+                    System.out.println("Voltando ao menu principal...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        } while (opcao != 4);
     }
 }

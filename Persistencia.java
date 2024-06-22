@@ -2,35 +2,64 @@ import java.io.*;
 import java.util.List;
 
 public class Persistencia {
-    public static void salvarDados(List<Evento> eventos, List<Participante> participantes, String arquivoEventos, String arquivoParticipantes) throws IOException {
-        try (BufferedWriter bwEventos = new BufferedWriter(new FileWriter(arquivoEventos));
-             BufferedWriter bwParticipantes = new BufferedWriter(new FileWriter(arquivoParticipantes))) {
-
+    public static void salvarEventos(List<Evento> eventos, String arquivo) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo))) {
             for (Evento evento : eventos) {
-                bwEventos.write(evento.getTitulo() + "," + evento.getDescricao() + "," + evento.getData() + "," + evento.getLocal() + "," + evento.getCapacidade() + "\n");
-            }
-
-            for (Participante participante : participantes) {
-                bwParticipantes.write(participante.getNome() + "," + participante.getEmail() + "," + participante.getTelefone() + "\n");
+                writer.write(evento.getNome() + ";" + evento.getData());
+                writer.newLine();
             }
         }
     }
 
-    public static void carregarDados(List<Evento> eventos, List<Participante> participantes, String arquivoEventos, String arquivoParticipantes) throws IOException {
-        try (BufferedReader brEventos = new BufferedReader(new FileReader(arquivoEventos));
-             BufferedReader brParticipantes = new BufferedReader(new FileReader(arquivoParticipantes))) {
-
+    public static void carregarEventos(GerenciadorEventos gerenciadorEventos, String arquivo) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(arquivo))) {
             String linha;
-            while ((linha = brEventos.readLine()) != null) {
-                String[] dados = linha.split(",");
-                Evento evento = new Evento(dados[0], dados[1], dados[2], dados[3], Integer.parseInt(dados[4]));
-                eventos.add(evento);
+            while ((linha = reader.readLine()) != null) {
+                String[] dados = linha.split(";");
+                Evento evento = new Evento(dados[0], dados[1]);
+                gerenciadorEventos.adicionarEvento(evento);
             }
+        }
+    }
 
-            while ((linha = brParticipantes.readLine()) != null) {
-                String[] dados = linha.split(",");
-                Participante participante = new Participante(dados[0], dados[1], dados[2]);
-                participantes.add(participante);
+    public static void salvarParticipantes(List<Participante> participantes, String arquivo) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo))) {
+            for (Participante participante : participantes) {
+                writer.write(participante.getNome() + ";" + participante.getEmail());
+                writer.newLine();
+            }
+        }
+    }
+
+    public static void carregarParticipantes(GerenciadorParticipantes gerenciadorParticipantes, String arquivo) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(arquivo))) {
+            String linha;
+            while ((linha = reader.readLine()) != null) {
+                String[] dados = linha.split(";");
+                Participante participante = new Participante(dados[0], dados[1]);
+                gerenciadorParticipantes.adicionarParticipante(participante);
+            }
+        }
+    }
+
+    public static void salvarCheckIns(List<CheckIn> checkIns, String arquivo) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo))) {
+            for (CheckIn checkIn : checkIns) {
+                writer.write(checkIn.getEvento().getNome() + ";" + checkIn.getParticipante().getNome() + ";" + checkIn.getDataCheckIn());
+                writer.newLine();
+            }
+        }
+    }
+
+    public static void carregarCheckIns(GerenciadorCheckIns gerenciadorCheckIns, GerenciadorEventos gerenciadorEventos, GerenciadorParticipantes gerenciadorParticipantes, String arquivo) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(arquivo))) {
+            String linha;
+            while ((linha = reader.readLine()) != null) {
+                String[] dados = linha.split(";");
+                Evento evento = gerenciadorEventos.buscarEventoPorNome(dados[0]);
+                Participante participante = gerenciadorParticipantes.buscarParticipantePorNome(dados[1]);
+                CheckIn checkIn = new CheckIn(participante, evento, dados[2]);
+                gerenciadorCheckIns.registrarCheckIn(checkIn);
             }
         }
     }

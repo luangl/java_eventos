@@ -1,2 +1,2 @@
-loco,locoo,10,loco,100
-fiesta,fiesta legal,20/6,festval,2000
+fiesta;2024-02-10
+loco;2024-03-10
